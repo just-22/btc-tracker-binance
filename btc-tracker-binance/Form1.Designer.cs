@@ -125,6 +125,7 @@
             this.Controls.Add(this.mainLabel);
             this.Name = "Form1";
             this.Text = "BTC tracker with Binance.NET";
+            this.Shown += new System.EventHandler(this.Form1_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
 
