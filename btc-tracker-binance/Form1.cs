@@ -31,18 +31,22 @@ namespace btc_tracker_binance
 
         public void RunTheSocket()
         {
+            // creation of the socket and subcribing to updates
             var client = new BinanceSocketClient();
             client.Spot.SubscribeToSymbolTickerUpdates("BTCUSDT", data =>
             {
+                // BECAUSE WE NEED TO UPDATE UI, WE NEED TO INVOKE THAT UI ELEMENT
                 if (btcValueLabel.InvokeRequired)
                     btcValueLabel.Invoke(new MethodInvoker(delegate
                     {
+                        // DEPENDING ON THE CONDITION WE FIRE A TRIGGER
                         if (!string.IsNullOrWhiteSpace(buyThresholdTextBox.Text) && buyCheckBox.CheckState == CheckState.Checked && decimal.Parse(buyThresholdTextBox.Text) > data.WeightedAveragePrice)
                             RunTrigger(ActionTrigger.BUY);
                         if (!string.IsNullOrWhiteSpace(sellThresholdTextBox.Text) && sellCheckBox.CheckState == CheckState.Checked && decimal.Parse(sellThresholdTextBox.Text) <= data.WeightedAveragePrice)
                             RunTrigger(ActionTrigger.SELL);
                         if (!string.IsNullOrWhiteSpace(closeThresholdTextBox.Text) && closeCheckBox.CheckState == CheckState.Checked && decimal.Parse(closeThresholdTextBox.Text) < data.WeightedAveragePrice)
                             RunTrigger(ActionTrigger.CLOSE);
+                        // HERE THE VALUE IS BEING UPDATED IN THE LABEL
                         btcValueLabel.Text = data.WeightedAveragePrice.ToString();
                     }));
             });
@@ -68,7 +72,7 @@ namespace btc_tracker_binance
                     break;
             }
         }
-
+        // allowing only numeric input into textboxes
         private void numericBoxValidation(object sender, KeyPressEventArgs e)
         {
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) &&
