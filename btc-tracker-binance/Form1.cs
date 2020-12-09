@@ -13,10 +13,20 @@ namespace btc_tracker_binance
 {
     public partial class Form1 : Form
     {
+        public enum ActionTrigger
+        {
+            BUY,
+            SELL,
+            CLOSE
+        }
         public Form1()
         {
             InitializeComponent();
+        }
 
+        private void Form1_Shown(object sender, EventArgs e)
+        {
+            RunTheSocket();
         }
 
         public void RunTheSocket()
@@ -25,13 +35,53 @@ namespace btc_tracker_binance
             client.Spot.SubscribeToSymbolTickerUpdates("BTCUSDT", data =>
             {
                 if (btcValueLabel.InvokeRequired)
-                    btcValueLabel.Invoke(new MethodInvoker(delegate { btcValueLabel.Text = data.LastPrice.ToString(); }));
+                    btcValueLabel.Invoke(new MethodInvoker(delegate
+                    {
+                        if (!string.IsNullOrWhiteSpace(buyThresholdTextBox.Text) && buyCheckBox.CheckState == CheckState.Checked && decimal.Parse(buyThresholdTextBox.Text) > data.WeightedAveragePrice)
+                            RunTrigger(ActionTrigger.BUY);
+                        if (!string.IsNullOrWhiteSpace(sellThresholdTextBox.Text) && sellCheckBox.CheckState == CheckState.Checked && decimal.Parse(sellThresholdTextBox.Text) <= data.WeightedAveragePrice)
+                            RunTrigger(ActionTrigger.SELL);
+                        if (!string.IsNullOrWhiteSpace(closeThresholdTextBox.Text) && closeCheckBox.CheckState == CheckState.Checked && decimal.Parse(closeThresholdTextBox.Text) < data.WeightedAveragePrice)
+                            RunTrigger(ActionTrigger.CLOSE);
+                        btcValueLabel.Text = data.WeightedAveragePrice.ToString();
+                    }));
             });
         }
 
-        private void Form1_Shown(object sender, EventArgs e)
+        private void RunTrigger(ActionTrigger trigger)
         {
-            RunTheSocket();
+            switch (trigger)
+            {
+                case ActionTrigger.BUY:
+                    buyCheckBox.CheckState = CheckState.Unchecked;
+                    MessageBox.Show("BUY ACTION");
+                    break;
+                case ActionTrigger.SELL:
+                    sellCheckBox.CheckState = CheckState.Unchecked;
+                    MessageBox.Show("SELL ACTION");
+                    break;
+                case ActionTrigger.CLOSE:
+                    closeCheckBox.CheckState = CheckState.Unchecked;
+                    MessageBox.Show("CLOSE ACTION");
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void numericBoxValidation(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) &&
+                (e.KeyChar != ','))
+            {
+                e.Handled = true;
+            }
+
+            // only allow one decimal point
+            if ((e.KeyChar == ',') && ((sender as TextBox).Text.IndexOf(',') > -1))
+            {
+                e.Handled = true;
+            }
         }
     }
 }

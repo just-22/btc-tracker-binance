@@ -65,6 +65,7 @@
             this.buyThresholdTextBox.Name = "buyThresholdTextBox";
             this.buyThresholdTextBox.Size = new System.Drawing.Size(100, 20);
             this.buyThresholdTextBox.TabIndex = 3;
+            this.buyThresholdTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.numericBoxValidation);
             // 
             // sellThresholdTextBox
             // 
@@ -72,6 +73,7 @@
             this.sellThresholdTextBox.Name = "sellThresholdTextBox";
             this.sellThresholdTextBox.Size = new System.Drawing.Size(100, 20);
             this.sellThresholdTextBox.TabIndex = 4;
+            this.sellThresholdTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.numericBoxValidation);
             // 
             // closeThresholdTextBox
             // 
@@ -79,6 +81,7 @@
             this.closeThresholdTextBox.Name = "closeThresholdTextBox";
             this.closeThresholdTextBox.Size = new System.Drawing.Size(100, 20);
             this.closeThresholdTextBox.TabIndex = 5;
+            this.closeThresholdTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.numericBoxValidation);
             // 
             // buyCheckBox
             // 
